@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Horários Disponíveis</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="paciente-gamificacao.html">🎮 Gamificação</a>
+        <a href="paciente-notificacoes.html">🔔 Notificações</a>
+        <a href="paciente-agenda-mes.html" class="active">📅 Agenda</a>
+        <a href="paciente-lista-psicologos.html">👥 Psicólogos</a>
+        <a href="paciente-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="day-header">
+        <h2 id="titulo-dia">Carregando...</h2>
+        <span class="day-number">-</span>
+      </div>
+
+      <div class="info-card">
+        <h3>Horários disponíveis</h3>
+        <p class="helper-text">Selecione um horário para agendar sua consulta</p>
+        
+        <div class="time-slots">
+          <!-- Horários serão carregados via JS -->
+        </div>
+      </div>
+
+      <a href="paciente-agenda-mes.html" class="btn btn-secondary btn-block">Voltar ao calendário</a>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Meu Perfil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="psicologo-gamificacao.html">🎮 Gamificação</a>
+        <a href="psicologo-notificacoes.html">🔔 Notificações</a>
+        <a href="psicologo-agenda-mes.html">📅 Agenda</a>
+        <a href="psicologo-pacientes.html">👥 Pacientes</a>
+        <a href="psicologo-perfil.html" class="active">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-header">
+        <h1>Meu Perfil Profissional</h1>
+        <p>Gerencie suas informações</p>
+      </div>
+
+      <div class="profile-detail">
+        <div class="detail-header">
+          <div class="detail-avatar">
+            <span class="avatar-initial">P</span>
+          </div>
+          <div class="detail-info">
+            <h2 class="perfil-nome">Carregando...</h2>
+            <button class="btn-link inline-edit" data-campo="nome">✎ Editar</button>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📞 Contato</h3>
+          <div class="info-row">
+            <span class="info-label">Telefone:</span>
+            <span class="perfil-telefone">-</span>
+            <button class="btn-link inline-edit" data-campo="telefone">✎</button>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📜 Documentação</h3>
+          <div class="info-row">
+            <span class="info-label">CRP:</span>
+            <span class="perfil-crm">-</span>
+            <button class="btn-link inline-edit" data-campo="crp">✎</button>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>💼 Especialidade</h3>
+          <div class="info-row">
+            <span class="info-label">Área:</span>
+            <span class="perfil-especialidade">-</span>
+            <button class="btn-link inline-edit" data-campo="especialidade">✎</button>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📍 Localização</h3>
+          <div class="info-row">
+            <span class="info-label">Endereço:</span>
+            <span class="perfil-localizacao">-</span>
+            <button class="btn-link inline-edit" data-campo="localizacao">✎</button>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📝 Sobre mim</h3>
+          <p class="perfil-bio">-</p>
+          <button class="btn-link inline-edit" data-campo="bio">✎ Editar</button>
+        </div>
+
+        <div class="info-card">
+          <h3>💰 Valores</h3>
+          <div class="info-row">
+            <span class="info-label">Consulta:</span>
+            <span class="perfil-valor">-</span>
+            <button class="btn-link inline-edit" data-campo="valorConsulta">✎</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

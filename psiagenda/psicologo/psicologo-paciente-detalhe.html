@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Detalhes do Paciente</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="psicologo-gamificacao.html">🎮 Gamificação</a>
+        <a href="psicologo-notificacoes.html">🔔 Notificações</a>
+        <a href="psicologo-agenda-mes.html">📅 Agenda</a>
+        <a href="psicologo-pacientes.html" class="active">👥 Pacientes</a>
+        <a href="psicologo-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-header">
+        <h1 class="paciente-nome">Carregando...</h1>
+        <a href="psicologo-pacientes.html" class="btn btn-secondary">← Voltar</a>
+      </div>
+
+      <div class="profile-section">
+        <div class="info-card">
+          <h3>📞 Contato</h3>
+          <div class="info-row">
+            <span class="info-label">Telefone:</span>
+            <span class="paciente-telefone">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">E-mail:</span>
+            <span class="paciente-email">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Documento:</span>
+            <span class="paciente-documento">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Nascimento:</span>
+            <span class="paciente-nascimento">-</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>😊 Como o paciente está se sentindo</h3>
+          <div class="paciente-humor-visual"></div>
+        </div>
+
+        <div class="info-card">
+          <h3>📝 Anotações do Psicólogo</h3>
+          <div class="paciente-anotacoes"></div>
+          <button class="btn btn-primary btn-nova-anotacao">+ Nova anotação</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

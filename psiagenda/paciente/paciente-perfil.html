@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Meu Perfil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="paciente-gamificacao.html">🎮 Gamificação</a>
+        <a href="paciente-notificacoes.html">🔔 Notificações</a>
+        <a href="paciente-agenda-mes.html">📅 Agenda</a>
+        <a href="paciente-lista-psicologos.html">👥 Psicólogos</a>
+        <a href="paciente-perfil.html" class="active">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-header">
+        <h1>Meu Perfil</h1>
+        <p>Gerencie suas informações pessoais</p>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar" id="avatar-inicial">👤</div>
+          <div class="profile-info">
+            <h2 class="paciente-nome">Carregando...</h2>
+            <p class="paciente-email">-</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Informações pessoais</h3>
+          <div class="info-row">
+            <span class="info-label">Telefone:</span>
+            <span class="paciente-telefone">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">CPF:</span>
+            <span class="paciente-cpf">Não informado</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Nascimento:</span>
+            <span class="paciente-nascimento">Não informada</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Como você está se sentindo hoje?</h3>
+          
+          <div class="mood-selector">
+            <button class="mood-btn" data-mood="😡">😡</button>
+            <button class="mood-btn" data-mood="😐">😐</button>
+            <button class="mood-btn" data-mood="😭">😭</button>
+            <button class="mood-btn" data-mood="🙂">🙂</button>
+            <button class="mood-btn" data-mood="😁">😁</button>
+          </div>
+          <input type="hidden" id="paciente-humor-emoji">
+
+          <div class="form-group">
+            <label for="paciente-humor-texto">Como foi seu dia?</label>
+            <textarea id="paciente-humor-texto" rows="4" placeholder="Compartilhe como você se sentiu hoje..."></textarea>
+          </div>
+
+          <button class="btn btn-primary btn-salvar-humor">Salvar registro</button>
+          <p class="helper-text paciente-humor-ultimo"></p>
+        </div>
+
+        <div class="info-card">
+          <h3>Suporte</h3>
+          <p>Precisa de ajuda? Entre em contato com nossa equipe de suporte.</p>
+          <button class="btn btn-secondary">Falar com suporte</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

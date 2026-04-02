@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Gamificação</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="psicologo-gamificacao.html" class="active">🎮 Gamificação</a>
+        <a href="psicologo-notificacoes.html">🔔 Notificações</a>
+        <a href="psicologo-agenda-mes.html">📅 Agenda</a>
+        <a href="psicologo-pacientes.html">👥 Pacientes</a>
+        <a href="psicologo-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-header">
+        <h1>🏆 Gamificação</h1>
+        <p>Complete desafios e ganhe recompensas</p>
+      </div>
+
+      <div class="gamification-stats">
+        <div class="stat-card">
+          <span class="stat-label">⭐ Pontos</span>
+          <span class="stat-value gamificacao-pontos">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">🏅 Nível</span>
+          <span class="stat-value gamificacao-nivel">1</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>🏆 Conquistas</h3>
+        <div class="conquistas-list">
+          <!-- Conquistas carregadas via JS -->
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>📋 Dinâmicas para Pacientes</h3>
+        <p class="helper-text">Crie atividades para seus pacientes realizarem</p>
+        
+        <div class="dynamics-list">
+          <!-- Dinâmicas carregadas via JS -->
+        </div>
+        
+        <button id="btn-add-dinamica" class="btn btn-primary">+ Nova Dinâmica</button>
+      </div>
+
+      <div class="info-card">
+        <h3>🎯 Como ganhar pontos?</h3>
+        <ul class="tips-list">
+          <li>✅ Completar perfil profissional: +50 pontos</li>
+          <li>✅ Criar nova dinâmica: +20 pontos</li>
+          <li>✅ Realizar consulta: +10 pontos</li>
+          <li>✅ Paciente completa atividade: +5 pontos</li>
+        </ul>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

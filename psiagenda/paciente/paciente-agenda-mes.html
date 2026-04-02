@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Minha Agenda</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="paciente-gamificacao.html">🎮 Gamificação</a>
+        <a href="paciente-notificacoes.html">🔔 Notificações</a>
+        <a href="paciente-agenda-mes.html" class="active">📅 Agenda</a>
+        <a href="paciente-lista-psicologos.html">👥 Psicólogos</a>
+        <a href="paciente-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-header">
+        <h1>📅 Janeiro 2025</h1>
+        <p>Clique em um dia para agendar sua consulta</p>
+      </div>
+
+      <div class="calendar-legend">
+        <div class="legend-item">
+          <span class="legend-color legend-available"></span>
+          <span>Dia disponível</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color legend-consultas"></span>
+          <span>Dia com consulta</span>
+        </div>
+      </div>
+
+      <table class="calendar">
+        <thead>
+          <tr>
+            <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+          <tr><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td></tr>
+          <tr><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td></tr>
+          <tr><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td></tr>
+          <tr><td>29</td><td>30</td><td>31</td><td colspan="4"></td></tr>
+        </tbody>
+      </table>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

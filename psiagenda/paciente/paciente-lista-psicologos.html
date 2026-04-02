@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Psicólogos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="paciente-gamificacao.html">🎮 Gamificação</a>
+        <a href="paciente-notificacoes.html">🔔 Notificações</a>
+        <a href="paciente-agenda-mes.html">📅 Agenda</a>
+        <a href="paciente-lista-psicologos.html" class="active">👥 Psicólogos</a>
+        <a href="paciente-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="page-header">
+        <h1>👥 Nossos Psicólogos</h1>
+        <p>Encontre o profissional ideal para você</p>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="busca-psicologos" placeholder="🔍 Buscar por nome ou especialidade..." class="search-input">
+      </div>
+
+      <div class="list-grid">
+        <!-- Cards serão carregados via JS -->
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>s

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Consulta Confirmada</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="paciente-gamificacao.html">🎮 Gamificação</a>
+        <a href="paciente-notificacoes.html">🔔 Notificações</a>
+        <a href="paciente-agenda-mes.html" class="active">📅 Agenda</a>
+        <a href="paciente-lista-psicologos.html">👥 Psicólogos</a>
+        <a href="paciente-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="confirmation-card">
+        <div class="confirmation-icon">✅</div>
+        <h2>Consulta confirmada!</h2>
+        
+        <div class="appointment-details">
+          <!-- Detalhes serão carregados via JS -->
+        </div>
+
+        <div class="confirmation-actions">
+          <a href="paciente-agenda-mes.html" class="btn btn-primary">Ver minha agenda</a>
+          <a href="paciente-lista-psicologos.html" class="btn btn-secondary">Buscar outros psicólogos</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

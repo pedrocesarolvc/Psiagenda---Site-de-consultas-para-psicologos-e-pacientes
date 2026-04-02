@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Detalhes do Psicólogo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="paciente-gamificacao.html">🎮 Gamificação</a>
+        <a href="paciente-notificacoes.html">🔔 Notificações</a>
+        <a href="paciente-agenda-mes.html">📅 Agenda</a>
+        <a href="paciente-lista-psicologos.html" class="active">👥 Psicólogos</a>
+        <a href="paciente-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="profile-detail">
+        <div class="detail-header">
+          <div class="detail-avatar">
+            <span class="avatar-inicial-psi">P</span>
+          </div>
+          <div class="detail-info">
+            <h1 class="psi-nome">Carregando...</h1>
+            <p class="psi-especialidade">-</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📞 Contato</h3>
+          <div class="info-row">
+            <span class="info-label">Telefone:</span>
+            <span class="psi-telefone">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">CRP:</span>
+            <span class="psi-crp">-</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📍 Localização</h3>
+          <div class="info-row">
+            <span class="info-label">Endereço:</span>
+            <span class="psi-localizacao">Não informado</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>📝 Sobre o profissional</h3>
+          <p class="psi-bio">Carregando informações...</p>
+        </div>
+
+        <div class="info-card">
+          <h3>💰 Valores</h3>
+          <div class="info-row">
+            <span class="info-label">Valor da consulta:</span>
+            <span class="psi-valor">-</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-marcar-consulta">Agendar consulta</button>
+        <a href="paciente-lista-psicologos.html" class="btn btn-secondary btn-block">Voltar</a>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

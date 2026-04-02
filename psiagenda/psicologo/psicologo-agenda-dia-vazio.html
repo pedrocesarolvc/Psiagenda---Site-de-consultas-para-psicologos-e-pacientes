@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Dia sem Consultas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="main-nav">
+      <div class="nav-brand">Psiagenda</div>
+      <div class="nav-links">
+        <a href="psicologo-gamificacao.html">🎮 Gamificação</a>
+        <a href="psicologo-notificacoes.html">🔔 Notificações</a>
+        <a href="psicologo-agenda-mes.html" class="active">📅 Agenda</a>
+        <a href="psicologo-pacientes.html">👥 Pacientes</a>
+        <a href="psicologo-perfil.html">👤 Perfil</a>
+        <button id="btn-sair" class="btn-link">Sair</button>
+      </div>
+    </nav>
+
+    <main class="app-main">
+      <div class="day-header">
+        <h2 id="titulo-dia-psicologo-vazio">Carregando...</h2>
+        <span class="day-number">-</span>
+      </div>
+
+      <div class="info-card">
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <h3>Nenhuma consulta agendada</h3>
+          <p>Este dia está livre na sua agenda</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>⚙️ Configurar horários</h3>
+        <p>Defina os horários que você estará disponível para atendimento</p>
+        <button id="btn-definir-horarios" class="btn btn-primary">Definir horários</button>
+      </div>
+
+      <a href="psicologo-agenda-mes.html" class="btn btn-secondary btn-block">Voltar ao calendário</a>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>

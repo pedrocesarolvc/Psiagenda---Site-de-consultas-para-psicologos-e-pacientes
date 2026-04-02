@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psiagenda - Cadastro Psicólogo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-logo">Psiagenda</h1>
+      <p class="app-tagline">Junte-se à nossa rede de profissionais</p>
+    </header>
+
+    <main class="app-main">
+      <div class="auth-card">
+        <h2 class="auth-title">Cadastro de Psicólogo</h2>
+        <p class="auth-subtitle">Comece a atender pacientes</p>
+
+        <form id="form-cadastro-psicologo" class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nome_completo">Nome completo *</label>
+              <input type="text" id="nome_completo" name="nome_completo" required placeholder="Digite seu nome">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">E-mail *</label>
+              <input type="email" id="email" name="email" required placeholder="seu@email.com">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="senha">Senha *</label>
+              <input type="password" id="senha" name="senha" required minlength="6" placeholder="Mínimo 6 caracteres">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefone">Telefone</label>
+              <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="crp">CRP *</label>
+              <input type="text" id="crp" name="crp" required placeholder="XX/000000">
+            </div>
+
+            <div class="form-group">
+              <label for="especialidade">Especialidade</label>
+              <select id="especialidade" name="especialidade">
+                <option value="">Selecione</option>
+                <option value="clinica">Psicologia Clínica</option>
+                <option value="organizacional">Psicologia Organizacional</option>
+                <option value="escolar">Psicologia Escolar</option>
+                <option value="hospitalar">Psicologia Hospitalar</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Criar conta profissional</button>
+        </form>
+
+        <div class="auth-footer">
+          <p>Já tem conta? <a href="index.html" class="link">Fazer login</a></p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Psiagenda. Todos os direitos reservados.</p>
+    </footer>
+  </div>
+  <script src="app-local.js"></script>
+</body>
+</html>
