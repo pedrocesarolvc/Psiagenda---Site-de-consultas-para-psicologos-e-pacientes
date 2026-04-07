@@ -340,7 +340,7 @@ function checkPageAccess() {
 }
 
 // ============================================
-// SETUPS DOS PSICÓLOGOS
+// SETUPS DE PÁGINAS
 // ============================================
 
 // 1. Login
@@ -362,9 +362,9 @@ function setupLogin() {
     setUsuarioLogado(usuario.id);
     
     if (usuario.tipo === "psicologo") {
-      window.location.href = "psicologo-agenda-mes.html";
-    } else if (usuario.tipo === "paciente") {
-      window.location.href = "paciente-agenda-mes.html";
+      window.location.href = "./pages/psicologo/psicologo-agenda-mes.html";
+    } else {
+      window.location.href = "./pages/pacientes/paciente-agenda-mes.html";
     }
   });
 }
@@ -400,17 +400,45 @@ function setupCadastroPsicologo() {
       email,
       senha,
       telefone,
-      crp,
+      crp: form.querySelector("#crp")?.value || "",
       especialidade
     });
 
     setUsuarioLogado(usuario.id);
     alert("Cadastro realizado com sucesso!");
-    window.location.href = "psicologo-agenda-mes.html";
+    window.location.href = "../psicologo/psicologo-agenda-mes.html";
+  });
+}
+// 3. Cadastro Paciente
+function setupCadastroPaciente() {
+  const form = document.querySelector("#form-cadastro-paciente");
+  if(!form) return;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = form.querySelector("#email").value.trim();
+
+    if (findUsuarioByEmail(email)) {
+      alert("E-mail já cadastrado");
+      return;
+    }
+
+    const usuario = createUsuario({
+      tipo: "paciente",
+      nome: form.querySelector("#nome_completo").value.trim(),
+      email,
+      senha: form.querySelector("#senha").value,
+      telefone: form.querySelector("#telefone").value.trim(),
+      cpf: form.querySelector("#cpf")?.value || ""
+    });
+
+    setUsuarioLogado(usuario.id);
+    alert("Cadastro realizado com sucesso!");
+    window.location.href = "../pacientes/paciente-agenda-mes.html";
   });
 }
 
-// 3. Agenda do Psicólogo (Mês)
+// 4. Agenda do Psicólogo (Mês)
 function setupPsicologoAgendaMes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -444,7 +472,7 @@ function setupPsicologoAgendaMes() {
   });
 }
 
-// 4. Agenda do Dia (com consultas)
+// 5. Agenda do Dia (com consultas)
 function setupPsicologoAgendaDiaConsultas() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -500,7 +528,7 @@ function setupPsicologoAgendaDiaConsultas() {
   });
 }
 
-// 5. Agenda do Dia (vazia)
+// 6. Agenda do Dia (vazia)
 function setupPsicologoAgendaDiaVazia() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -525,7 +553,7 @@ function setupPsicologoAgendaDiaVazia() {
   }
 }
 
-// 6. Lista de Pacientes
+// 7. Lista de Pacientes
 function setupPsicologoPacientes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -583,7 +611,7 @@ function setupPsicologoPacientes() {
   }
 }
 
-// 7. Detalhe do Paciente
+// 8. Detalhe do Paciente
 function setupPsicologoPacienteDetalhe() {
   const pacienteId = localStorage.getItem("psiagenda-paciente-selecionado");
   if (!pacienteId) {
@@ -649,7 +677,7 @@ function setupPsicologoPacienteDetalhe() {
   }
 }
 
-// 8. Perfil do Psicólogo
+// 9. Perfil do Psicólogo
 function setupPsicologoPerfil() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -684,7 +712,7 @@ function setupPsicologoPerfil() {
   });
 }
 
-// 9. Gamificação do Psicólogo
+// 10. Gamificação do Psicólogo
 function setupPsicologoGamificacao() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -752,7 +780,7 @@ function setupPsicologoGamificacao() {
   }
 }
 
-// 10. Notificações do Psicólogo
+// 11. Notificações do Psicólogo
 function setupPsicologoNotificacoes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -788,7 +816,7 @@ function setupPsicologoNotificacoes() {
   });
 }
 
-// 11. Botão Sair
+// 12. Botão Sair
 function setupBotaoSair() {
   const botoes = document.querySelectorAll("#btn-sair");
   botoes.forEach(btn => {
@@ -815,6 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const setups = {
     "index.html": setupLogin,
     "cadastro-psicologo.html": setupCadastroPsicologo,
+    "cadastro-paciente.html": setupCadastroPaciente,
     "psicologo-agenda-mes.html": setupPsicologoAgendaMes,
     "psicologo-agenda-dia-consultas.html": setupPsicologoAgendaDiaConsultas,
     "psicologo-agenda-dia-vazio.html": setupPsicologoAgendaDiaVazia,
