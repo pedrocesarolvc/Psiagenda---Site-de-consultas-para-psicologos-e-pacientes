@@ -325,17 +325,20 @@ function checkPageAccess() {
     "psicologo-perfil.html", "psicologo-gamificacao.html", "psicologo-notificacoes.html"
   ];
   
+  const inPagesDir = window.location.pathname.includes('/pages/');
+  const basePath = inPagesDir ? "../../index.html" : "index.html";
+
   if (paginasPublicas.includes(file)) return;
   
   const user = getUsuarioLogado();
   if (!user) {
-    window.location.href = "index.html";
+    window.location.href = basePath;
     return;
   }
   
   if (paginasPsicologo.includes(file) && user.tipo !== "psicologo") {
     alert("Acesso apenas para psicólogos");
-    window.location.href = "index.html";
+    window.location.href = basePath;
   }
 }
 
@@ -406,7 +409,7 @@ function setupCadastroPsicologo() {
 
     setUsuarioLogado(usuario.id);
     alert("Cadastro realizado com sucesso!");
-    window.location.href = "../psicologo/psicologo-agenda-mes.html";
+    window.location.href = "psicologo-agenda-mes.html";
   });
 }
 // 3. Cadastro Paciente
@@ -434,7 +437,7 @@ function setupCadastroPaciente() {
 
     setUsuarioLogado(usuario.id);
     alert("Cadastro realizado com sucesso!");
-    window.location.href = "../pacientes/paciente-agenda-mes.html";
+    window.location.href = "paciente-agenda-mes.html";
   });
 }
 
@@ -824,7 +827,8 @@ function setupBotaoSair() {
       e.preventDefault();
       if (confirm("Deseja sair?")) {
         logout();
-        window.location.href = "index.html";
+        const inPagesDir = window.location.pathname.includes('/pages/');
+        window.location.href = inPagesDir ? "../../index.html" : "index.html";
       }
     });
   });
