@@ -75,3 +75,20 @@ def alterar_status_consulta(consulta_id: str, acao: str):
     res, status = ConsultaController.alterar_status(consulta_id, acao)
     if status != 200: raise HTTPException(status_code=status, detail=res["erro"])
     return res
+
+# ---- Rotas de Gamificação ----
+
+@app.post("/api/gamificacao/{usuario_id}/acao/{tipo_acao}")
+def processar_acao_gamificacao(usuario_id: str, tipo_acao: str):
+    """tipo_acao suportadas: 'perfil', 'dinamica', 'humor'"""
+    from backend.controllers.gamificacao_controller import GamificacaoController
+    res, status = GamificacaoController.processar_acao(usuario_id, tipo_acao)
+    if status != 200: raise HTTPException(status_code=status, detail=res["erro"])
+    return res
+
+@app.get("/api/gamificacao/{usuario_id}")
+def obter_gamificacao(usuario_id: str):
+    from backend.controllers.gamificacao_controller import GamificacaoController
+    res, status = GamificacaoController.obter_status(usuario_id)
+    if status != 200: raise HTTPException(status_code=status, detail=res["erro"])
+    return res
