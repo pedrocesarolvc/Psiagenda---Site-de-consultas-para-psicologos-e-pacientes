@@ -4,10 +4,6 @@
 
 const STORAGE_KEY = "psiagenda-local";
 
-// ---------------------------
-// ESTADO / LOCALSTORAGE
-// ---------------------------
-
 
 // ---------------------------
 // SESSÃO
@@ -37,40 +33,36 @@ function getDiaSelecionado() {
 }
 
 // ---------------------------
-// CONSULTAS
+// CRUD USUÁRIOS
 // ---------------------------
-function createConsulta(consulta) {
+function createUsuario(usuario) {
   const state = loadState();
   const id = gerarId();
-  const nova = { id, status: "confirmada", criadaEm: new Date().toISOString(), ...consulta };
-  state.consultas.push(nova);
+  const novo = { id, ...usuario };
+  state.usuarios.push(novo);
   saveState(state);
-  return nova;
+  return novo;
 }
 
-function getConsultasDoPsicologo(psicologoId) {
+function findUsuarioByEmail(email) {
   const state = loadState();
-  return state.consultas.filter(c => c.psicologoId === psicologoId);
+  return state.usuarios.find(u => u.email === email) || null;
 }
 
-function getConsultasDoPsicologoNoDia(psicologoId, dataISO) {
+function findUsuarioById(id) {
   const state = loadState();
-  return state.consultas.filter(c => c.psicologoId === psicologoId && c.data === dataISO);
+  return state.usuarios.find(u => u.id === id) || null;
 }
 
-function cancelarConsulta(consultaId) {
+function updateUsuario(id, dados) {
   const state = loadState();
-  const consulta = state.consultas.find(c => c.id === consultaId);
-  if (!consulta) return false;
-  
-  consulta.status = "cancelada";
+  const idx = state.usuarios.findIndex(u => u.id === id);
+  if (idx === -1) return null;
+  state.usuarios[idx] = { ...state.usuarios[idx], ...dados };
   saveState(state);
-  
-  addNotificacao(consulta.pacienteId, `❌ Sua consulta do dia ${consulta.data} às ${consulta.hora} foi cancelada.`);
-  addNotificacao(consulta.psicologoId, `❌ Consulta com paciente cancelada para ${consulta.data} às ${consulta.hora}`);
-  
-  return true;
+  return state.usuarios[idx];
 }
+
 
 // ---------------------------
 // NOTIFICAÇÕES
