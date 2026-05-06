@@ -63,30 +63,6 @@ function updateUsuario(id, dados) {
   return state.usuarios[idx];
 }
 
-
-// ---------------------------
-// GAMIFICAÇÃO
-// ---------------------------
-
-  g.pontos += pontos;
-  
-  if (g.pontos >= 200) g.nivel = 3;
-  else if (g.pontos >= 100) g.nivel = 2;
-  else g.nivel = 1;
-  
-  saveState(state);
-  
-  // Verificar conquistas
-  if (g.pontos >= 100 && !g.conquistas.includes("100_pontos")) {
-    g.conquistas.push("100_pontos");
-    addNotificacao(usuarioId, "🏆 Conquista desbloqueada: 100 pontos!");
-  }
-  if (g.pontos >= 200 && !g.conquistas.includes("200_pontos")) {
-    g.conquistas.push("200_pontos");
-    addNotificacao(usuarioId, "🏆 Conquista desbloqueada: 200 pontos - Mestre da plataforma!");
-  }
-}
-
 // ---------------------------
 // EXERCÍCIOS/DINÂMICAS
 // ---------------------------
