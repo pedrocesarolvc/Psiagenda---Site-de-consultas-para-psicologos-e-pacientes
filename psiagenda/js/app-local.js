@@ -8,22 +8,19 @@ const STORAGE_KEY = "psiagenda-local";
 // ---------------------------
 // SESSÃO
 // ---------------------------
-function setUsuarioLogado(usuario_info) {
-  localStorage.setItem("psiagenda-sessao", JSON.stringify(usuario_info));
+function setUsuarioLogado(id) {
+  localStorage.setItem("psiagenda-usuario-logado", id);
 }
 
 function getUsuarioLogado() {
-  const sessaoStr = localStorage.getItem("psiagenda-sessao");
-  if (!sessaoStr) return null;
-  try {
-    return JSON.parse(sessaoStr);
-  } catch (e) {
-    return null;
-  }
+  const id = localStorage.getItem("psiagenda-usuario-logado");
+  if (!id) return null;
+  const state = loadState();
+  return state.usuarios.find(u => u.id === id) || null;
 }
 
 function logout() {
-  localStorage.removeItem("psiagenda-sessao");
+  localStorage.removeItem("psiagenda-usuario-logado");
   localStorage.removeItem("psiagenda-dia-selecionado");
 }
 
@@ -144,32 +141,36 @@ function setupCadastroPsicologo() {
 // 3. Cadastro Paciente
 function setupCadastroPaciente() {
   const form = document.querySelector("#form-cadastro-paciente");
-  if(!form) return;
-
-  form.addEventListener("submit", (e) => {
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = form.querySelector("#email").value.trim();
-
-    if (findUsuarioByEmail(email)) {
-      alert("E-mail já cadastrado");
-      return;
-    }
-
-    const usuario = createUsuario({
-      tipo: "paciente",
+    
+    const payload = {
       nome: form.querySelector("#nome_completo").value.trim(),
-      email,
+      email: form.querySelector("#email").value.trim(),
       senha: form.querySelector("#senha").value,
       telefone: form.querySelector("#telefone").value.trim(),
       cpf: form.querySelector("#cpf")?.value || ""
-    });
-
-    setUsuarioLogado(usuario.id);
-    alert("Cadastro realizado com sucesso!");
-    window.location.href = "paciente-agenda-mes.html";
+    };
+    try {
+      const resposta = await fetch("http://localhost:8000/api/auth/register/paciente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const dados = await resposta.json();
+      if (!resposta.ok) {
+        alert(dados.erro);
+        return;
+      }
+      setUsuarioLogado({ id: dados.id, tipo: "paciente" });
+      alert("Cadastro realizado com sucesso!");
+      window.location.href = "paciente-agenda-mes.html";
+    } catch(erro) {
+      alert("Erro ao enviar cadastro.");
+    }
   });
 }
-
 // 4. Agenda do Psicólogo (Mês)
 function setupPsicologoAgendaMes() {
   const user = getUsuarioLogado();
@@ -567,6 +568,7 @@ function setupBotaoSair() {
 // INICIALIZAÇÃO
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
+  seedDemo();
   checkPageAccess();
   setupBotaoSair();
   
