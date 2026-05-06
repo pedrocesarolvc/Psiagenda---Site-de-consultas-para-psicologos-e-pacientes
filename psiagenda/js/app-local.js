@@ -166,146 +166,199 @@ function setupCadastroPaciente() {
   });
 }
 // 4. Agenda do Psicólogo (Mês)
-async function setupPsicologoAgendaMes() {
+function setupPsicologoAgendaMes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
-  try {
-    // Busca todas as consultas vinculadas a este psicólogo
-    const resposta = await fetch(`http://localhost:8000/api/consultas?psicologo_id=${user.id}`);
-    const consultas = await resposta.json();
+
+  const consultas = getConsultasDoPsicologo(user.id);
+  const diasComConsulta = new Set(consultas.map(c => parseInt(c.data.split('-')[2])));
+  
+  // Definir dias com consulta no calendário
+  const cells = document.querySelectorAll(".calendar tbody td");
+  cells.forEach(cell => {
+    const dia = parseInt(cell.textContent.trim());
+    if (isNaN(dia)) return;
     
-    const diasComConsulta = new Set(consultas.map(c => parseInt(c.data_hora.split('-')[2].substring(0, 2))));
+    cell.classList.remove("calendar-day-consulta");
+    if (diasComConsulta.has(dia)) {
+      cell.classList.add("calendar-day-consulta");
+    }
     
-    const cells = document.querySelectorAll(".calendar tbody td");
-    cells.forEach(cell => {
-      const dia = parseInt(cell.textContent.trim());
-      if (isNaN(dia)) return;
+    cell.style.cursor = "pointer";
+    cell.addEventListener("click", () => {
+      const dataISO = `2025-01-${String(dia).padStart(2, "0")}`;
+      setDiaSelecionado(dataISO);
       
-      cell.classList.remove("calendar-day-consulta");
-      if (diasComConsulta.has(dia)) cell.classList.add("calendar-day-consulta");
-      
-      cell.style.cursor = "pointer";
-      cell.addEventListener("click", () => {
-        // ... (Mantém a lógica de setar dataISO e redirecionar)
-        const dataISO = `2025-01-${String(dia).padStart(2, "0")}`;
-        setDiaSelecionado(dataISO);
-        window.location.href = diasComConsulta.has(dia) ? "psicologo-agenda-dia-consultas.html" : "psicologo-agenda-dia-vazio.html";
-      });
+      const temConsulta = diasComConsulta.has(dia);
+      if (temConsulta) {
+        window.location.href = "psicologo-agenda-dia-consultas.html";
+      } else {
+        window.location.href = "psicologo-agenda-dia-vazio.html";
+      }
     });
-  } catch(e) {
-    console.error("Erro ao carregar o calendário:", e);
-  }
+  });
 }
 
 // 5. Agenda do Dia (com consultas)
-async function setupPsicologoAgendaDiaConsultas() {
+function setupPsicologoAgendaDiaConsultas() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
   
   const dataISO = getDiaSelecionado();
+  const consultas = getConsultasDoPsicologoNoDia(user.id, dataISO);
+  
+  // Atualizar cabeçalho
+  const data = new Date(dataISO);
+  document.querySelector("#titulo-dia-psicologo").textContent = 
+    data.toLocaleDateString("pt-BR", { weekday: "long" });
+  document.querySelector(".day-number").textContent = data.getDate();
+  
+  // Listar consultas
   const container = document.querySelector(".time-slots");
   if (!container) return;
-  try {
-    const resposta = await fetch(`http://localhost:8000/api/consultas/dia?psicologo_id=${user.id}&data=${dataISO}`);
-    const consultas = await resposta.json();
-    
-    // ... (Mantém atualização de título e número do dia)
-    container.innerHTML = "";
-    if (consultas.length === 0) {
-      container.innerHTML = '<p class="helper-text">Nenhuma consulta agendada para este dia</p>';
-      return;
-    }
-    
-    consultas.forEach(consulta => {
-      const slot = document.createElement("div");
-      slot.className = "time-slot";
-      slot.innerHTML = `
-        <div>
-          <strong>${consulta.hora}</strong> - ${consulta.paciente_nome}
-          <span class="badge badge-${consulta.status.toLowerCase()}">${consulta.status}</span>
-        </div>
-        <div>
-          <button class="btn btn-sm btn-danger btn-cancelar" data-id="${consulta.id}">Cancelar</button>
-          <button class="btn btn-sm btn-secondary btn-anotar" data-id="${consulta.paciente_id}">Anotações</button>
-        </div>
-      `;
-      
-      // Comunicação vitalícia com o Padrão State do Back-end
-      slot.querySelector(".btn-cancelar")?.addEventListener("click", async () => {
-        if (confirm("Deseja realmente cancelar esta consulta?")) {
-          const resCancel = await fetch(`http://localhost:8000/api/consultas/${consulta.id}/status?acao=cancelar`, { method: "PUT" });
-          const dados = await resCancel.json();
-          if(!resCancel.ok) alert(dados.erro); // O State avisa se já estiver cancelada!
-          else setupPsicologoAgendaDiaConsultas(); // Recarrega a tela
-        }
-      });
-      // ... (Lógica do btn-anotar para redirecionar)
-      container.appendChild(slot);
-    });
-  } catch (e) {
-    console.error(e);
+  
+  if (consultas.length === 0) {
+    container.innerHTML = '<p class="helper-text">Nenhuma consulta agendada para este dia</p>';
+    return;
   }
+  
+  container.innerHTML = "";
+  
+  consultas.forEach(consulta => {
+    const paciente = findUsuarioById(consulta.pacienteId);
+    const slot = document.createElement("div");
+    slot.className = "time-slot";
+    slot.innerHTML = `
+      <div>
+        <strong>${consulta.hora}</strong> - ${paciente?.nome || "Paciente"}
+        <span class="badge badge-confirmada">${consulta.status}</span>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-danger btn-cancelar" data-id="${consulta.id}">Cancelar</button>
+        <button class="btn btn-sm btn-secondary btn-anotar" data-id="${paciente?.id}">Anotações</button>
+      </div>
+    `;
+    
+    slot.querySelector(".btn-cancelar")?.addEventListener("click", () => {
+      if (confirm("Cancelar esta consulta?")) {
+        cancelarConsulta(consulta.id);
+        setupPsicologoAgendaDiaConsultas();
+      }
+    });
+    
+    slot.querySelector(".btn-anotar")?.addEventListener("click", () => {
+      localStorage.setItem("psiagenda-paciente-selecionado", paciente.id);
+      window.location.href = "psicologo-paciente-detalhe.html";
+    });
+    
+    container.appendChild(slot);
+  });
 }
 
 // 6. Agenda do Dia (vazia)
-function setupPsicologoAgendaDiaVazia() {
+async function setupPsicologoAgendaDiaVazia() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
   
   const dataISO = getDiaSelecionado();
-  const data = new Date(dataISO);
   
+  // Atualiza a interface (Mantém igual estava)
+  const data = new Date(dataISO);
   document.querySelector("#titulo-dia-psicologo-vazio").textContent = 
     data.toLocaleDateString("pt-BR", { weekday: "long" });
   document.querySelector(".day-number").textContent = data.getDate();
   
-  // Botão para definir horários
+  // Nova Lógica do Botão com Fetch
   const btnDefinir = document.querySelector("#btn-definir-horarios");
   if (btnDefinir) {
-    btnDefinir.addEventListener("click", () => {
+    btnDefinir.addEventListener("click", async () => {
       const horarios = prompt("Digite os horários disponíveis (separados por vírgula)\nEx: 09:00,10:00,14:00,15:00");
-      if (horarios) {
-        addNotificacao(user.id, `Horários definidos para ${dataISO}: ${horarios}`);
-        alert("Horários salvos! Os pacientes poderão agendar.");
+      
+      if (horarios && horarios.trim() !== "") {
+        try {
+          // Envia a lista de horários cortados pela vírgula para o Python salvar
+          const resposta = await fetch("http://localhost:8000/api/agenda/disponibilidade", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              psicologo_id: user.id,
+              data: dataISO,
+              horarios: horarios.split(",").map(h => h.trim())
+            })
+          });
+          if (!resposta.ok) {
+            const dados = await resposta.json();
+            alert(dados.erro);
+            return;
+          }
+          alert("Horários salvos! Os pacientes já podem agendar.");
+          // Como não é mais vazio, joga o psicólogo para a tela de agenda do dia
+          window.location.href = "psicologo-agenda-dia-consultas.html";
+          
+        } catch (e) {
+          alert("Erro ao salvar horários no servidor.");
+        }
       }
     });
   }
 }
 
 // 7. Lista de Pacientes
-async function setupPsicologoPacientes() {
+function setupPsicologoPacientes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
   
+  const consultas = getConsultasDoPsicologo(user.id);
+  const pacienteIds = [...new Set(consultas.map(c => c.pacienteId))];
+  const pacientes = pacienteIds.map(id => findUsuarioById(id)).filter(p => p);
+  
   const container = document.querySelector(".lista-pacientes");
   const inputBusca = document.querySelector("#busca-pacientes");
+  
   if (!container) return;
   
-  try {
-    const resposta = await fetch(`http://localhost:8000/api/psicologo/${user.id}/pacientes`);
-    const pacientes = await resposta.json();
+  function renderizar(filtro = "") {
+    const termo = filtro.toLowerCase();
+    const filtrados = pacientes.filter(p => 
+      !termo || p.nome?.toLowerCase().includes(termo) || p.email?.toLowerCase().includes(termo)
+    );
     
-    function renderizar(filtro = "") {
-      const termo = filtro.toLowerCase();
-      const filtrados = pacientes.filter(p => !termo || p.nome?.toLowerCase().includes(termo));
-      
-      container.innerHTML = "";
-      if (filtrados.length === 0) return container.innerHTML = '<p class="helper-text">Nenhum paciente encontrado</p>';
-      
-      filtrados.forEach(paciente => {
-        // ... (Mesma lógica visual de criar o Card)
-        const card = document.createElement("article");
-        card.innerHTML = `<h2 class="card-title">${paciente.nome}</h2><button class="btn-ver-detalhes">Ver detalhes</button>`;
-        card.querySelector(".btn-ver-detalhes").addEventListener("click", () => {
-          localStorage.setItem("psiagenda-paciente-selecionado", paciente.id);
-          window.location.href = "psicologo-paciente-detalhe.html";
-        });
-        container.appendChild(card);
-      });
+    container.innerHTML = "";
+    
+    if (filtrados.length === 0) {
+      container.innerHTML = '<p class="helper-text">Nenhum paciente encontrado</p>';
+      return;
     }
-    renderizar();
-    if (inputBusca) inputBusca.addEventListener("input", () => renderizar(inputBusca.value));
-  } catch(e) { console.error(e); }
+    
+    filtrados.forEach(paciente => {
+      const consultasPaciente = consultas.filter(c => c.pacienteId === paciente.id);
+      const ultimaConsulta = consultasPaciente.sort((a,b) => new Date(b.data) - new Date(a.data))[0];
+      
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <h2 class="card-title">${paciente.nome}</h2>
+        <div class="card-tag">📞 ${paciente.telefone || "Sem telefone"}</div>
+        <p class="card-meta">✉️ ${paciente.email}</p>
+        <p class="card-meta">📅 ${consultasPaciente.length} consulta(s)</p>
+        <p class="card-meta">🕒 Última: ${ultimaConsulta ? ultimaConsulta.data : "Nenhuma"}</p>
+        <button class="btn btn-primary btn-ver-detalhes" data-id="${paciente.id}">Ver detalhes</button>
+      `;
+      
+      card.querySelector(".btn-ver-detalhes").addEventListener("click", () => {
+        localStorage.setItem("psiagenda-paciente-selecionado", paciente.id);
+        window.location.href = "psicologo-paciente-detalhe.html";
+      });
+      
+      container.appendChild(card);
+    });
+  }
+  
+  renderizar();
+  
+  if (inputBusca) {
+    inputBusca.addEventListener("input", () => renderizar(inputBusca.value));
+  }
 }
 
 // 8. Detalhe do Paciente
