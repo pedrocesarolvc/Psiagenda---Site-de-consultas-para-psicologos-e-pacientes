@@ -67,24 +67,7 @@ function updateUsuario(id, dados) {
 // ---------------------------
 // GAMIFICAÇÃO
 // ---------------------------
-function getGamificacao(usuarioId) {
-  const state = loadState();
-  let g = state.gamificacao.find(g => g.usuarioId === usuarioId);
-  if (!g) {
-    g = { usuarioId, pontos: 0, nivel: 1, conquistas: [] };
-    state.gamificacao.push(g);
-    saveState(state);
-  }
-  return g;
-}
 
-function addPontos(usuarioId, pontos) {
-  const state = loadState();
-  let g = state.gamificacao.find(g => g.usuarioId === usuarioId);
-  if (!g) {
-    g = { usuarioId, pontos: 0, nivel: 1, conquistas: [] };
-    state.gamificacao.push(g);
-  }
   g.pontos += pontos;
   
   if (g.pontos >= 200) g.nivel = 3;
