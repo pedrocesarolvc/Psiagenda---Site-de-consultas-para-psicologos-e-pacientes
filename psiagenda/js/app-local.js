@@ -74,24 +74,29 @@ function checkPageAccess() {
 function setupLogin() {
   const form = document.querySelector("#form-login");
   if (!form) return;
-
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = form.querySelector("#email").value.trim();
     const senha = form.querySelector("#senha").value;
-
-    const usuario = findUsuarioByEmail(email);
-    if (!usuario || usuario.senha !== senha) {
-      alert("E-mail ou senha inválidos");
-      return;
-    }
-
-    setUsuarioLogado(usuario.id);
-    
-    if (usuario.tipo === "psicologo") {
-      window.location.href = "./pages/psicologo/psicologo-agenda-mes.html";
-    } else {
-      window.location.href = "./pages/pacientes/paciente-agenda-mes.html";
+    try {
+      const resposta = await fetch("http://localhost:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha })
+      });
+      const dados = await resposta.json();
+      if (!resposta.ok) {
+        alert(dados.erro);
+        return;
+      }
+      setUsuarioLogado({ id: dados.usuario_id, tipo: dados.tipo });
+      if (dados.tipo === "psicologo") {
+        window.location.href = "./pages/psicologo/psicologo-agenda-mes.html";
+      } else {
+        window.location.href = "./pages/pacientes/paciente-agenda-mes.html";
+      }
+    } catch (erro) {
+      alert("Erro ao conectar com o servidor.");
     }
   });
 }
