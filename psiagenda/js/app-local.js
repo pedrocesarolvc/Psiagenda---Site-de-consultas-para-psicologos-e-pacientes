@@ -104,8 +104,6 @@ function setupCadastroPsicologo() {
   if (!form) return;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
-    // Objeto limpo como o nosso Controller Python espera
     const payload = {
       nome: form.querySelector("#nome_completo").value.trim(),
       email: form.querySelector("#email").value.trim(),
@@ -122,11 +120,9 @@ function setupCadastroPsicologo() {
       });
       const dados = await resposta.json();
       if (!resposta.ok) {
-        // Pega os erros dos Fiscais da Chain of Responsibility ("Senha Fraca", "Email sem @")
         alert(dados.erro);
         return;
       }
-      // Deu certo! O Python devolve 201 Created.
       setUsuarioLogado({ id: dados.id, tipo: "psicologo" });
       alert("Cadastro realizado com sucesso!");
       window.location.href = "psicologo-agenda-mes.html";
