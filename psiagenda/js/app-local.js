@@ -65,27 +65,6 @@ function updateUsuario(id, dados) {
 
 
 // ---------------------------
-// ANOTAÇÕES DOS PACIENTES
-// ---------------------------
-function getAnotacoesDoPaciente(pacienteId) {
-  const state = loadState();
-  return state.anotacoes.filter(a => a.pacienteId === pacienteId).sort((a, b) => 
-    new Date(b.dataISO) - new Date(a.dataISO)
-  );
-}
-
-function addAnotacao(pacienteId, texto) {
-  const state = loadState();
-  state.anotacoes.push({
-    id: gerarId(),
-    pacienteId,
-    texto,
-    dataISO: new Date().toISOString()
-  });
-  saveState(state);
-}
-
-// ---------------------------
 // GAMIFICAÇÃO
 // ---------------------------
 function getGamificacao(usuarioId) {
