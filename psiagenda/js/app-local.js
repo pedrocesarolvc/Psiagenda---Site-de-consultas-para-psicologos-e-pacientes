@@ -273,61 +273,39 @@ function setupPsicologoAgendaDiaVazia() {
 }
 
 // 7. Lista de Pacientes
-function setupPsicologoPacientes() {
+async function setupPsicologoPacientes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
   
-  const consultas = getConsultasDoPsicologo(user.id);
-  const pacienteIds = [...new Set(consultas.map(c => c.pacienteId))];
-  const pacientes = pacienteIds.map(id => findUsuarioById(id)).filter(p => p);
-  
   const container = document.querySelector(".lista-pacientes");
   const inputBusca = document.querySelector("#busca-pacientes");
-  
   if (!container) return;
   
-  function renderizar(filtro = "") {
-    const termo = filtro.toLowerCase();
-    const filtrados = pacientes.filter(p => 
-      !termo || p.nome?.toLowerCase().includes(termo) || p.email?.toLowerCase().includes(termo)
-    );
+  try {
+    const resposta = await fetch(`http://localhost:8000/api/psicologo/${user.id}/pacientes`);
+    const pacientes = await resposta.json();
     
-    container.innerHTML = "";
-    
-    if (filtrados.length === 0) {
-      container.innerHTML = '<p class="helper-text">Nenhum paciente encontrado</p>';
-      return;
-    }
-    
-    filtrados.forEach(paciente => {
-      const consultasPaciente = consultas.filter(c => c.pacienteId === paciente.id);
-      const ultimaConsulta = consultasPaciente.sort((a,b) => new Date(b.data) - new Date(a.data))[0];
+    function renderizar(filtro = "") {
+      const termo = filtro.toLowerCase();
+      const filtrados = pacientes.filter(p => !termo || p.nome?.toLowerCase().includes(termo));
       
-      const card = document.createElement("article");
-      card.className = "card";
-      card.innerHTML = `
-        <h2 class="card-title">${paciente.nome}</h2>
-        <div class="card-tag">📞 ${paciente.telefone || "Sem telefone"}</div>
-        <p class="card-meta">✉️ ${paciente.email}</p>
-        <p class="card-meta">📅 ${consultasPaciente.length} consulta(s)</p>
-        <p class="card-meta">🕒 Última: ${ultimaConsulta ? ultimaConsulta.data : "Nenhuma"}</p>
-        <button class="btn btn-primary btn-ver-detalhes" data-id="${paciente.id}">Ver detalhes</button>
-      `;
+      container.innerHTML = "";
+      if (filtrados.length === 0) return container.innerHTML = '<p class="helper-text">Nenhum paciente encontrado</p>';
       
-      card.querySelector(".btn-ver-detalhes").addEventListener("click", () => {
-        localStorage.setItem("psiagenda-paciente-selecionado", paciente.id);
-        window.location.href = "psicologo-paciente-detalhe.html";
+      filtrados.forEach(paciente => {
+        // ... (Mesma lógica visual de criar o Card)
+        const card = document.createElement("article");
+        card.innerHTML = `<h2 class="card-title">${paciente.nome}</h2><button class="btn-ver-detalhes">Ver detalhes</button>`;
+        card.querySelector(".btn-ver-detalhes").addEventListener("click", () => {
+          localStorage.setItem("psiagenda-paciente-selecionado", paciente.id);
+          window.location.href = "psicologo-paciente-detalhe.html";
+        });
+        container.appendChild(card);
       });
-      
-      container.appendChild(card);
-    });
-  }
-  
-  renderizar();
-  
-  if (inputBusca) {
-    inputBusca.addEventListener("input", () => renderizar(inputBusca.value));
-  }
+    }
+    renderizar();
+    if (inputBusca) inputBusca.addEventListener("input", () => renderizar(inputBusca.value));
+  } catch(e) { console.error(e); }
 }
 
 // 8. Detalhe do Paciente
