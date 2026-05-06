@@ -8,19 +8,22 @@ const STORAGE_KEY = "psiagenda-local";
 // ---------------------------
 // SESSÃO
 // ---------------------------
-function setUsuarioLogado(id) {
-  localStorage.setItem("psiagenda-usuario-logado", id);
+function setUsuarioLogado(usuario_info) {
+  localStorage.setItem("psiagenda-sessao", JSON.stringify(usuario_info));
 }
 
 function getUsuarioLogado() {
-  const id = localStorage.getItem("psiagenda-usuario-logado");
-  if (!id) return null;
-  const state = loadState();
-  return state.usuarios.find(u => u.id === id) || null;
+  const sessaoStr = localStorage.getItem("psiagenda-sessao");
+  if (!sessaoStr) return null;
+  try {
+    return JSON.parse(sessaoStr);
+  } catch (e) {
+    return null;
+  }
 }
 
 function logout() {
-  localStorage.removeItem("psiagenda-usuario-logado");
+  localStorage.removeItem("psiagenda-sessao");
   localStorage.removeItem("psiagenda-dia-selecionado");
 }
 
