@@ -33,37 +33,6 @@ function getDiaSelecionado() {
 }
 
 // ---------------------------
-// CRUD USUÁRIOS
-// ---------------------------
-function createUsuario(usuario) {
-  const state = loadState();
-  const id = gerarId();
-  const novo = { id, ...usuario };
-  state.usuarios.push(novo);
-  saveState(state);
-  return novo;
-}
-
-function findUsuarioByEmail(email) {
-  const state = loadState();
-  return state.usuarios.find(u => u.email === email) || null;
-}
-
-function findUsuarioById(id) {
-  const state = loadState();
-  return state.usuarios.find(u => u.id === id) || null;
-}
-
-function updateUsuario(id, dados) {
-  const state = loadState();
-  const idx = state.usuarios.findIndex(u => u.id === id);
-  if (idx === -1) return null;
-  state.usuarios[idx] = { ...state.usuarios[idx], ...dados };
-  saveState(state);
-  return state.usuarios[idx];
-}
-
-// ---------------------------
 // EXERCÍCIOS/DINÂMICAS
 // ---------------------------
 const EXERCICIOS_BASE = [
