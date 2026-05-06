@@ -7,34 +7,7 @@ const STORAGE_KEY = "psiagenda-local";
 // ---------------------------
 // ESTADO / LOCALSTORAGE
 // ---------------------------
-function loadState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return {
-      usuarios: [],
-      consultas: [],
-      notificacoes: [],
-      gamificacao: [],
-      anotacoes: []
-    };
-  }
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed.anotacoes) parsed.anotacoes = [];
-    if (!parsed.gamificacao) parsed.gamificacao = [];
-    return parsed;
-  } catch (e) {
-    return { usuarios: [], consultas: [], notificacoes: [], gamificacao: [], anotacoes: [] };
-  }
-}
 
-function saveState(state) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function gerarId() {
-  return Date.now().toString() + Math.random().toString(36).substr(2, 6);
-}
 
 // ---------------------------
 // SESSÃO
