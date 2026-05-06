@@ -308,71 +308,43 @@ async function setupPsicologoPacientes() {
   } catch(e) { console.error(e); }
 }
 
-// 8. Detalhe do Paciente
-function setupPsicologoPacienteDetalhe() {
+// 8. Detalhe do Paciente e Anotações
+javascript
+async function setupPsicologoPacienteDetalhe() {
   const pacienteId = localStorage.getItem("psiagenda-paciente-selecionado");
-  if (!pacienteId) {
-    window.location.href = "psicologo-pacientes.html";
-    return;
-  }
+  if (!pacienteId) return window.location.href = "psicologo-pacientes.html";
   
-  const paciente = findUsuarioById(pacienteId);
-  if (!paciente) return;
-  
-  // Dados básicos
-  document.querySelector(".paciente-nome").textContent = paciente.nome || "Paciente";
-  document.querySelector(".paciente-telefone").textContent = paciente.telefone || "(não informado)";
-  document.querySelector(".paciente-email").textContent = paciente.email || "(não informado)";
-  document.querySelector(".paciente-documento").textContent = paciente.cpf || "(não informado)";
-  document.querySelector(".paciente-nascimento").textContent = paciente.nascimento || "(não informada)";
-  
-  // Humor do paciente
-  const humorEl = document.querySelector(".paciente-humor-visual");
-  if (humorEl) {
-    if (paciente.humorEmoji || paciente.humorTexto) {
-      humorEl.innerHTML = `
-        ${paciente.humorEmoji ? `<span style="font-size: 24px;">${paciente.humorEmoji}</span>` : ""}
-        <p>${paciente.humorTexto || ""}</p>
-        <small>${paciente.humorDataISO ? new Date(paciente.humorDataISO).toLocaleString("pt-BR") : ""}</small>
-      `;
-    } else {
-      humorEl.textContent = "Paciente ainda não registrou como está se sentindo.";
-    }
-  }
-  
-  // Anotações
-  const anotacoes = getAnotacoesDoPaciente(pacienteId);
-  const containerAnotacoes = document.querySelector(".paciente-anotacoes");
-  if (containerAnotacoes) {
-    containerAnotacoes.innerHTML = "";
+  try {
+    // 1. Puxa perfil do paciente
+    const resPaciente = await fetch(`http://localhost:8000/api/pacientes/${pacienteId}`);
+    const paciente = await resPaciente.json();
+    // ... atualiza o DOM (nome, telefone, humorVisual, etc)
+
+    // 2. Puxa anotações
+    const resNotas = await fetch(`http://localhost:8000/api/anotacoes?paciente_id=${pacienteId}`);
+    const anotacoes = await resNotas.json();
+    const containerAnotacoes = document.querySelector(".paciente-anotacoes");
     
-    if (anotacoes.length === 0) {
-      containerAnotacoes.innerHTML = '<p class="helper-text">Nenhuma anotação registrada</p>';
-    } else {
-      anotacoes.forEach(anotacao => {
-        const div = document.createElement("div");
-        div.className = "anotacao-item";
-        div.innerHTML = `
-          <p>${anotacao.texto}</p>
-          <small>${new Date(anotacao.dataISO).toLocaleString("pt-BR")}</small>
-        `;
-        containerAnotacoes.appendChild(div);
+    // ... atualiza visual das anotações (forEach)
+
+    // 3. Cadastrar nova anotação
+    const btnNova = document.querySelector(".btn-nova-anotacao");
+    if (btnNova) {
+      btnNova.addEventListener("click", async () => {
+        const texto = prompt("Digite a anotação:");
+        if (texto && texto.trim()) {
+           await fetch("http://localhost:8000/api/anotacoes", {
+             method: "POST",
+             headers: {"Content-Type": "application/json"},
+             body: JSON.stringify({ paciente_id: pacienteId, texto: texto.trim() })
+           });
+           setupPsicologoPacienteDetalhe(); // Refresh
+        }
       });
     }
-  }
-  
-  // Botão nova anotação
-  const btnNova = document.querySelector(".btn-nova-anotacao");
-  if (btnNova) {
-    btnNova.addEventListener("click", () => {
-      const texto = prompt("Digite a anotação:");
-      if (texto && texto.trim()) {
-        addAnotacao(pacienteId, texto.trim());
-        setupPsicologoPacienteDetalhe(); // Recarregar
-      }
-    });
-  }
+  } catch(e) { console.error(e); }
 }
+
 
 // 9. Perfil do Psicólogo
 function setupPsicologoPerfil() {
@@ -409,72 +381,41 @@ function setupPsicologoPerfil() {
   });
 }
 
-// 10. Gamificação do Psicólogo
-function setupPsicologoGamificacao() {
+// 10. Gamificação (O Padrão Strategy que fizemos)
+javascript
+async function setupPsicologoGamificacao() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
   
-  const g = getGamificacao(user.id);
-  document.querySelector(".gamificacao-pontos").textContent = g.pontos;
-  document.querySelector(".gamificacao-nivel").textContent = g.nivel;
-  
-  // Exibir conquistas
-  const conquistasContainer = document.querySelector(".conquistas-list");
-  if (conquistasContainer && g.conquistas) {
-    conquistasContainer.innerHTML = "";
-    const todasConquistas = [
-      { id: "100_pontos", nome: "100 Pontos", descricao: "Alcance 100 pontos" },
-      { id: "200_pontos", nome: "200 Pontos", descricao: "Alcance 200 pontos" }
-    ];
+  try {
+    // Busca saldo atual
+    const res = await fetch(`http://localhost:8000/api/gamificacao/${user.id}`);
+    const g = await res.json();
     
-    todasConquistas.forEach(conq => {
-      const desbloqueada = g.conquistas.includes(conq.id);
-      const div = document.createElement("div");
-      div.className = `conquista-item ${desbloqueada ? "desbloqueada" : "bloqueada"}`;
-      div.innerHTML = `
-        <span>${desbloqueada ? "🏆" : "🔒"}</span>
-        <div>
-          <strong>${conq.nome}</strong>
-          <small>${conq.descricao}</small>
-        </div>
-      `;
-      conquistasContainer.appendChild(div);
-    });
-  }
-  
-  // Dinâmicas cadastradas
-  const exercicios = getExerciciosDoPsicologo(user.id);
-  const container = document.querySelector(".dynamics-list");
-  
-  if (container) {
-    container.innerHTML = "";
-    
-    exercicios.forEach(ex => {
-      const item = document.createElement("article");
-      item.className = "dynamic-item";
-      item.innerHTML = `
-        <h3>${ex.titulo}</h3>
-        <p>${ex.descricao}</p>
-      `;
-      container.appendChild(item);
-    });
-  }
-  
-  // Botão adicionar dinâmica
-  const btnAdd = document.querySelector("#btn-add-dinamica");
-  if (btnAdd) {
-    btnAdd.addEventListener("click", () => {
-      const titulo = prompt("Título da dinâmica:");
-      if (!titulo) return;
-      const descricao = prompt("Descrição:");
-      if (!descricao) return;
-      
-      addExercicio(user.id, titulo, descricao);
-      setupPsicologoGamificacao();
-      addPontos(user.id, 20);
-      addNotificacao(user.id, `✨ Nova dinâmica "${titulo}" criada! +20 pontos`);
-    });
-  }
+    document.querySelector(".gamificacao-pontos").textContent = g.pontos;
+    document.querySelector(".gamificacao-nivel").textContent = g.nivel;
+    // ... atualiza lista de conquistas visuais baseada em g.conquistas
+
+    const btnAdd = document.querySelector("#btn-add-dinamica");
+    if (btnAdd) {
+      btnAdd.addEventListener("click", async () => {
+        const titulo = prompt("Título da dinâmica:");
+        const descricao = prompt("Descrição:");
+        if (!titulo || !descricao) return;
+        
+        // Dispara o ganho de pontos para a estratégia "dinamica"
+        const resPontos = await fetch(`http://localhost:8000/api/gamificacao/${user.id}/acao/dinamica`, { method: "POST" });
+        const resDinâmica = await fetch("http://localhost:8000/api/dinamicas", {
+           method: "POST", headers:{"Content-Type":"application/json"},
+           body: JSON.stringify({ psicologo_id: user.id, titulo, descricao })
+        });
+
+        const bonus = await resPontos.json();
+        alert(`Dinâmica salva! ${bonus.mensagem} (Nível: ${bonus.novo_nivel})`);
+        setupPsicologoGamificacao(); // Recarrega tela
+      });
+    }
+  } catch(e) { console.error(e); }
 }
 
 // 11. Notificações do Psicólogo
