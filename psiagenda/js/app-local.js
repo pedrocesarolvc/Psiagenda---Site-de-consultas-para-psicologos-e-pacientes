@@ -166,37 +166,35 @@ function setupCadastroPaciente() {
   });
 }
 // 4. Agenda do Psicólogo (Mês)
-function setupPsicologoAgendaMes() {
+async function setupPsicologoAgendaMes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
-
-  const consultas = getConsultasDoPsicologo(user.id);
-  const diasComConsulta = new Set(consultas.map(c => parseInt(c.data.split('-')[2])));
-  
-  // Definir dias com consulta no calendário
-  const cells = document.querySelectorAll(".calendar tbody td");
-  cells.forEach(cell => {
-    const dia = parseInt(cell.textContent.trim());
-    if (isNaN(dia)) return;
+  try {
+    // Busca todas as consultas vinculadas a este psicólogo
+    const resposta = await fetch(`http://localhost:8000/api/consultas?psicologo_id=${user.id}`);
+    const consultas = await resposta.json();
     
-    cell.classList.remove("calendar-day-consulta");
-    if (diasComConsulta.has(dia)) {
-      cell.classList.add("calendar-day-consulta");
-    }
+    const diasComConsulta = new Set(consultas.map(c => parseInt(c.data_hora.split('-')[2].substring(0, 2))));
     
-    cell.style.cursor = "pointer";
-    cell.addEventListener("click", () => {
-      const dataISO = `2025-01-${String(dia).padStart(2, "0")}`;
-      setDiaSelecionado(dataISO);
+    const cells = document.querySelectorAll(".calendar tbody td");
+    cells.forEach(cell => {
+      const dia = parseInt(cell.textContent.trim());
+      if (isNaN(dia)) return;
       
-      const temConsulta = diasComConsulta.has(dia);
-      if (temConsulta) {
-        window.location.href = "psicologo-agenda-dia-consultas.html";
-      } else {
-        window.location.href = "psicologo-agenda-dia-vazio.html";
-      }
+      cell.classList.remove("calendar-day-consulta");
+      if (diasComConsulta.has(dia)) cell.classList.add("calendar-day-consulta");
+      
+      cell.style.cursor = "pointer";
+      cell.addEventListener("click", () => {
+        // ... (Mantém a lógica de setar dataISO e redirecionar)
+        const dataISO = `2025-01-${String(dia).padStart(2, "0")}`;
+        setDiaSelecionado(dataISO);
+        window.location.href = diasComConsulta.has(dia) ? "psicologo-agenda-dia-consultas.html" : "psicologo-agenda-dia-vazio.html";
+      });
     });
-  });
+  } catch(e) {
+    console.error("Erro ao carregar o calendário:", e);
+  }
 }
 
 // 5. Agenda do Dia (com consultas)
