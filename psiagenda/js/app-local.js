@@ -5,11 +5,6 @@
 const STORAGE_KEY = "psiagenda-local";
 
 // ---------------------------
-// ESTADO / LOCALSTORAGE
-// ---------------------------
-
-
-// ---------------------------
 // SESSÃO
 // ---------------------------
 function setUsuarioLogado(id) {
