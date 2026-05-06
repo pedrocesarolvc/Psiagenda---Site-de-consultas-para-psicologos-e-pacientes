@@ -102,40 +102,38 @@ function setupLogin() {
 function setupCadastroPsicologo() {
   const form = document.querySelector("#form-cadastro-psicologo");
   if (!form) return;
-
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    const nome = form.querySelector("#nome_completo").value.trim();
-    const email = form.querySelector("#email").value.trim();
-    const senha = form.querySelector("#senha").value;
-    const telefone = form.querySelector("#telefone").value.trim();
-    const crp = form.querySelector("#crp").value.trim();
-    const especialidade = form.querySelector("#especialidade").value;
-
-    if (!nome || !email || !senha) {
-      alert("Preencha nome, e-mail e senha");
-      return;
+    // Objeto limpo como o nosso Controller Python espera
+    const payload = {
+      nome: form.querySelector("#nome_completo").value.trim(),
+      email: form.querySelector("#email").value.trim(),
+      senha: form.querySelector("#senha").value,
+      telefone: form.querySelector("#telefone").value.trim(),
+      crp: form.querySelector("#crp").value.trim(),
+      especialidade: form.querySelector("#especialidade").value
+    };
+    try {
+      const resposta = await fetch("http://localhost:8000/api/auth/register/psicologo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const dados = await resposta.json();
+      if (!resposta.ok) {
+        // Pega os erros dos Fiscais da Chain of Responsibility ("Senha Fraca", "Email sem @")
+        alert(dados.erro);
+        return;
+      }
+      // Deu certo! O Python devolve 201 Created.
+      setUsuarioLogado({ id: dados.id, tipo: "psicologo" });
+      alert("Cadastro realizado com sucesso!");
+      window.location.href = "psicologo-agenda-mes.html";
+      
+    } catch(erro) {
+      alert("Erro ao enviar cadastro.");
     }
-
-    if (findUsuarioByEmail(email)) {
-      alert("E-mail já cadastrado");
-      return;
-    }
-
-    const usuario = createUsuario({
-      tipo: "psicologo",
-      nome,
-      email,
-      senha,
-      telefone,
-      crp: form.querySelector("#crp")?.value || "",
-      especialidade
-    });
-
-    setUsuarioLogado(usuario.id);
-    alert("Cadastro realizado com sucesso!");
-    window.location.href = "psicologo-agenda-mes.html";
   });
 }
 // 3. Cadastro Paciente
