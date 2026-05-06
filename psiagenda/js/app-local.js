@@ -65,33 +65,6 @@ function updateUsuario(id, dados) {
 
 
 // ---------------------------
-// NOTIFICAÇÕES
-// ---------------------------
-function addNotificacao(usuarioId, texto) {
-  const state = loadState();
-  state.notificacoes.unshift({ 
-    id: gerarId(), 
-    usuarioId, 
-    texto, 
-    lida: false, 
-    data: new Date().toISOString() 
-  });
-  saveState(state);
-}
-
-function getNotificacoesDoUsuario(usuarioId) {
-  const state = loadState();
-  return state.notificacoes.filter(n => n.usuarioId === usuarioId);
-}
-
-function marcarNotificacaoLida(notificacaoId) {
-  const state = loadState();
-  const notif = state.notificacoes.find(n => n.id === notificacaoId);
-  if (notif) notif.lida = true;
-  saveState(state);
-}
-
-// ---------------------------
 // ANOTAÇÕES DOS PACIENTES
 // ---------------------------
 function getAnotacoesDoPaciente(pacienteId) {
