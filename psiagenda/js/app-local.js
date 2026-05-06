@@ -559,7 +559,6 @@ function setupBotaoSair() {
 // INICIALIZAÇÃO
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
-  seedDemo();
   checkPageAccess();
   setupBotaoSair();
   
