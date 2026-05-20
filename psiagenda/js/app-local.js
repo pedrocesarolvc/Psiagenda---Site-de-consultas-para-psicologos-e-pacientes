@@ -211,8 +211,9 @@ async function setupPsicologoAgendaDiaConsultas() {
   if (!container) return;
 
   try {
-    const resposta = await fetch(`http://localhost:8000/api/consultas/dia?psicologo_id=${user.id}&data=${dataISO}`);
-    const consultas = await resposta.json();
+    const resposta = await fetch(`http://localhost:8000/api/consultas?psicologo_id=${user.id}`);
+    const todasConsultas = await resposta.json();
+    const consultas = todasConsultas.filter(c => c.data_hora.startsWith(dataISO));
   
   
     // Atualizar cabeçalho
@@ -322,6 +323,9 @@ async function setupPsicologoPacientes() {
   try {
     const resposta = await fetch(`http://localhost:8000/api/psicologo/${user.id}/pacientes`);
     const pacientes = await resposta.json();
+    
+    const resConsultas = await fetch(`http://localhost:8000/api/consultas?psicologo_id=${user.id}`);
+    const consultas = await resConsultas.json();
 
     function renderizar(filtro = "") {
     const termo = filtro.toLowerCase();
@@ -331,8 +335,8 @@ async function setupPsicologoPacientes() {
     if (filtrados.length ===0) return container.innerHTML = `<p class="helper-text">Nenhum paciente encontrado</p>`;
 
     filtrados.forEach(paciente => {
-      const consultasPaciente = consultas.filter(c => c.pacienteId === paciente.id);
-      const ultimaConsulta = consultasPaciente.sort((a,b) => new Date(b.data) - new Date(a.data))[0];
+      const consultasPaciente = consultas.filter(c => c.paciente_id === paciente.id);
+      const ultimaConsulta = consultasPaciente.sort((a,b) => new Date(b.data_hora) - new Date(a.data_hora))[0];
       
       const card = document.createElement("article");
       card.innerHTML = `
@@ -340,7 +344,7 @@ async function setupPsicologoPacientes() {
         <div class="card-tag">📞 ${paciente.telefone || "Sem telefone"}</div>
         <p class="card-meta">✉️ ${paciente.email}</p>
         <p class="card-meta">📅 ${consultasPaciente.length} consulta(s)</p>
-        <p class="card-meta">🕒 Última: ${ultimaConsulta ? ultimaConsulta.data : "Nenhuma"}</p>
+        <p class="card-meta">🕒 Última: ${ultimaConsulta ? ultimaConsulta.data_hora : "Nenhuma"}</p>
         <button class="btn btn-primary btn-ver-detalhes" data-id="${paciente.id}">Ver detalhes</button>
       `;
       card.querySelector(".btn-ver-detalhes").addEventListener("click", () => {

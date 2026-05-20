@@ -21,6 +21,7 @@ class GamificacaoRepository:
         g = Gamificacao(usuario_id)
         g.pontos = row['pontos']
         g.nivel = row['nivel']
+        g._atualizar_nivel_e_conquistas() # Regenera as conquistas baseadas no saldo de pontos
         return g
 
     @classmethod
