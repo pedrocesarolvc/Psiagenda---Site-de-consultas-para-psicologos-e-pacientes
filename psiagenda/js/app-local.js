@@ -247,7 +247,7 @@ async function setupPsicologoAgendaDiaConsultas() {
       </div>
     `;
     
-    slot.querySelector(".btn-cancelar")?.addEventListener("click", () => {
+    slot.querySelector(".btn-cancelar")?.addEventListener("click", async () => {
       if (confirm("Deseja realmente cancelar esta consulta?")) {
         const resCancel = await fetch(`http://localhost:8000/api/consultas/${consulta.id}/status?acao=cancelar`, { method: "PUT" });
         const dados = await resCancel.json();
