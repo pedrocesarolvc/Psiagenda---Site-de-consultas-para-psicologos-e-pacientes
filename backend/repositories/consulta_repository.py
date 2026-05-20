@@ -45,7 +45,15 @@ class ConsultaRepository:
             
         c = Consulta(row['paciente_id'], row['psicologo_id'], row['data_hora'])
         c.id = row['id']
-        c._Consulta__status_atual = c._Consulta__estados[row['status']]  # Restaura o estado pelo State Pattern
+        
+        status_string = row['status']
+        if status_string == "Concluída":
+            from backend.patterns.states import ConcluidaState
+            c.mudar_estado(ConcluidaState())
+        elif status_string == "Cancelada":
+            from backend.patterns.states import CanceladaState
+            c.mudar_estado(CanceladaState())
+            
         return c
 
     @classmethod

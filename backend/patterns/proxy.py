@@ -15,3 +15,10 @@ class SenhaProxy:
 
     def get_hash(self) -> str:
         return self._senha_hash
+
+    @classmethod
+    def from_hash(cls, hash_armazenado: str) -> 'SenhaProxy':
+        """Recupera o Proxy a partir de um hash já existente no banco de dados."""
+        instancia = cls.__new__(cls)
+        instancia._senha_hash = hash_armazenado
+        return instancia

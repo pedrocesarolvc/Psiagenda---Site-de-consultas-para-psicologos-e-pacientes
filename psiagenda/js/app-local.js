@@ -438,10 +438,14 @@ function setupPsicologoPerfil() {
       const valorAtual = span.textContent;
       const novoValor = prompt(`Editar ${campo}:`, valorAtual);
       if (novoValor && novoValor.trim()) {
-        // updateUsuario(user.id, { [campo]: novoValor.trim() }); // TODO: Integrar com backend
+        // TODO: updateUsuario(user.id, { [campo]: novoValor.trim() }); // Esperando endpoint de PATCH /api/usuarios
         span.textContent = novoValor.trim();
-        // addNotificacao(user.id, `Seu perfil foi atualizado! +10 pontos`); // TODO: Integrar com backend
-        // addPontos(user.id, 10); // TODO: Integrar com backend
+        
+        // Chamada de Gamificação: Acumular pontos por editar perfil
+        fetch(`http://localhost:8000/api/gamificacao/${user.id}/acao/perfil`, { method: "POST" })
+          .then(r => r.json())
+          .then(data => console.log(data.mensagem))
+          .catch(e => console.error(e));
       }
     });
   });
