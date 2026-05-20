@@ -141,3 +141,75 @@ def obter_gamificacao(usuario_id: str):
     res, status = GamificacaoController.obter_status(usuario_id)
     if status != 200: raise HTTPException(status_code=status, detail=res["erro"])
     return res
+
+# ---- Rotas Faltantes (Anotações, Dinâmicas e Pacientes) ----
+
+@app.get("/api/pacientes/{paciente_id}")
+def obter_paciente(paciente_id: str):
+    from backend.repositories.usuario_repository import UsuarioRepository
+    pac = UsuarioRepository.buscar_por_id(paciente_id)
+    if not pac or getattr(pac, "tipo", "") != "paciente":
+        raise HTTPException(status_code=404, detail="Paciente não encontrado")
+    return {
+        "id": pac.id,
+        "nome": pac.nome,
+        "email": pac.email,
+        "telefone": getattr(pac, "telefone", ""),
+        "cpf": getattr(pac, "cpf", ""),
+        "data_nascimento": getattr(pac, "data_nascimento", "")
+    }
+
+@app.get("/api/psicologo/{psicologo_id}/pacientes")
+def listar_pacientes_do_psicologo(psicologo_id: str):
+    # Retorna os pacientes que já têm consulta com este psicólogo
+    from backend.database import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT DISTINCT u.id, u.nome, u.email, u.telefone
+        FROM usuarios u
+        JOIN consultas c ON u.id = c.paciente_id
+        WHERE c.psicologo_id = ?
+    ''', (psicologo_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+class AnotacaoRequest(BaseModel):
+    paciente_id: str
+    texto: str
+
+@app.post("/api/anotacoes")
+def criar_anotacao(req: AnotacaoRequest):
+    from backend.database import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO anotacoes (paciente_id, texto) VALUES (?, ?)", (req.paciente_id, req.texto))
+    conn.commit()
+    conn.close()
+    return {"mensagem": "Anotação salva!"}
+
+@app.get("/api/anotacoes")
+def listar_anotacoes(paciente_id: str):
+    from backend.database import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM anotacoes WHERE paciente_id = ? ORDER BY data_criacao DESC", (paciente_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+class DinamicaRequest(BaseModel):
+    psicologo_id: str
+    titulo: str
+    descricao: str
+
+@app.post("/api/dinamicas")
+def criar_dinamica(req: DinamicaRequest):
+    from backend.database import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO dinamicas (psicologo_id, titulo, descricao) VALUES (?, ?, ?)", (req.psicologo_id, req.titulo, req.descricao))
+    conn.commit()
+    conn.close()
+    return {"mensagem": "Dinâmica salva com sucesso!"}

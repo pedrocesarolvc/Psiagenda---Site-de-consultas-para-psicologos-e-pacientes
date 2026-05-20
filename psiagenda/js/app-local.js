@@ -363,14 +363,31 @@ async function setupPsicologoPacienteDetalhe() {
     // 1. Puxa perfil do paciente
     const resPaciente = await fetch(`http://localhost:8000/api/pacientes/${pacienteId}`);
     const paciente = await resPaciente.json();
-    // ... atualiza o DOM (nome, telefone, humorVisual, etc)
+    
+    const elNome = document.querySelector(".paciente-nome");
+    if(elNome) elNome.textContent = paciente.nome || "Paciente";
+    
+    const elTelefone = document.querySelector(".paciente-telefone");
+    if(elTelefone) elTelefone.textContent = paciente.telefone || "Não informado";
 
     // 2. Puxa anotações
     const resNotas = await fetch(`http://localhost:8000/api/anotacoes?paciente_id=${pacienteId}`);
     const anotacoes = await resNotas.json();
     const containerAnotacoes = document.querySelector(".paciente-anotacoes");
     
-    // ... atualiza visual das anotações (forEach)
+    if(containerAnotacoes) {
+      containerAnotacoes.innerHTML = "";
+      if (anotacoes.length === 0) {
+        containerAnotacoes.innerHTML = '<p class="helper-text">Nenhuma anotação ainda.</p>';
+      } else {
+        anotacoes.forEach(nota => {
+          const div = document.createElement("div");
+          div.className = "anotacao-item";
+          div.innerHTML = `<p>${nota.texto}</p><small>${new Date(nota.data_criacao).toLocaleString()}</small>`;
+          containerAnotacoes.appendChild(div);
+        });
+      }
+    }
 
     // 3. Cadastrar nova anotação
     const btnNova = document.querySelector(".btn-nova-anotacao");
@@ -436,9 +453,10 @@ async function setupPsicologoGamificacao() {
     const res = await fetch(`http://localhost:8000/api/gamificacao/${user.id}`);
     const g = await res.json();
     
-    document.querySelector(".gamificacao-pontos").textContent = g.pontos;
-    document.querySelector(".gamificacao-nivel").textContent = g.nivel;
-    // ... atualiza lista de conquistas visuais baseada em g.conquistas
+    const elPontos = document.querySelector(".gamificacao-pontos");
+    if(elPontos) elPontos.textContent = g.pontos;
+    const elNivel = document.querySelector(".gamificacao-nivel");
+    if(elNivel) elNivel.textContent = g.nivel;
 
     const btnAdd = document.querySelector("#btn-add-dinamica");
     if (btnAdd) {
