@@ -39,3 +39,15 @@ class ConsultaController:
 
         ConsultaRepository.salvar(consulta)
         return {"mensagem": msg_retorno, "novo_status": consulta.get_status()}, 200
+
+    @staticmethod
+    def definir_disponibilidade(dados: dict):
+        psicologo_id = dados.get("psicologo_id")
+        data = dados.get("data")
+        horarios = dados.get("horarios", [])
+        
+        if not psicologo_id or not data:
+            return {"erro": "ID do psicólogo e data são obrigatórios."}, 400
+            
+        ConsultaRepository.salvar_disponibilidade(psicologo_id, data, horarios)
+        return {"mensagem": "Horários salvos com sucesso!", "horarios": horarios}, 200

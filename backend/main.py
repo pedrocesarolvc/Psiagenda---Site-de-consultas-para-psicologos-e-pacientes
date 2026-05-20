@@ -59,6 +59,11 @@ class ConsultaRequest(BaseModel):
     psicologo_id: str
     data_hora: str
 
+class DisponibilidadeRequest(BaseModel):
+    psicologo_id: str
+    data: str
+    horarios: list[str]
+
 @app.post("/api/consultas")
 def criar_consulta(req: ConsultaRequest):
     from backend.controllers.consulta_controller import ConsultaController
@@ -75,6 +80,50 @@ def alterar_status_consulta(consulta_id: str, acao: str):
     res, status = ConsultaController.alterar_status(consulta_id, acao)
     if status != 200: raise HTTPException(status_code=status, detail=res["erro"])
     return res
+
+@app.post("/api/agenda/disponibilidade")
+def definir_disponibilidade(req: DisponibilidadeRequest):
+    from backend.controllers.consulta_controller import ConsultaController
+    res, status = ConsultaController.definir_disponibilidade(req.model_dump())
+    if status != 200: raise HTTPException(status_code=status, detail=res["erro"])
+    return res
+
+@app.get("/api/agenda/disponibilidade")
+def obter_disponibilidade(psicologo_id: str, data: str):
+    from backend.repositories.consulta_repository import ConsultaRepository
+    horarios = ConsultaRepository.buscar_disponibilidade(psicologo_id, data)
+    return {"horarios": horarios}
+
+@app.get("/api/psicologos")
+def listar_psicologos():
+    from backend.repositories.usuario_repository import UsuarioRepository
+    return UsuarioRepository.listar_psicologos()
+
+@app.get("/api/psicologos/{psicologo_id}")
+def obter_psicologo(psicologo_id: str):
+    from backend.repositories.usuario_repository import UsuarioRepository
+    psi = UsuarioRepository.buscar_por_id(psicologo_id)
+    if not psi or getattr(psi, "tipo", "") != "psicologo":
+        raise HTTPException(status_code=404, detail="Psicólogo não encontrado")
+    return {
+        "id": psi.id,
+        "nome": psi.nome,
+        "email": psi.email,
+        "telefone": getattr(psi, "telefone", ""),
+        "crp": getattr(psi, "crp", ""),
+        "especialidade": getattr(psi, "especialidade", ""),
+        "bio": getattr(psi, "bio", ""),
+        "valorConsulta": getattr(psi, "valorConsulta", "")
+    }
+
+@app.get("/api/consultas")
+def listar_consultas(paciente_id: str = None, psicologo_id: str = None):
+    from backend.repositories.consulta_repository import ConsultaRepository
+    if paciente_id:
+        return ConsultaRepository.listar_por_paciente(paciente_id)
+    if psicologo_id:
+        return ConsultaRepository.listar_por_psicologo(psicologo_id)
+    return []
 
 # ---- Rotas de Gamificação ----
 

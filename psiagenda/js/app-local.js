@@ -355,7 +355,6 @@ async function setupPsicologoPacientes() {
   } catch(e) { console.error(e); }
 }
 // 8. Detalhe do Paciente e Anotações
-javascript
 async function setupPsicologoPacienteDetalhe() {
   const pacienteId = localStorage.getItem("psiagenda-paciente-selecionado");
   if (!pacienteId) return window.location.href = "psicologo-pacientes.html";
@@ -418,17 +417,16 @@ function setupPsicologoPerfil() {
       const valorAtual = span.textContent;
       const novoValor = prompt(`Editar ${campo}:`, valorAtual);
       if (novoValor && novoValor.trim()) {
-        updateUsuario(user.id, { [campo]: novoValor.trim() });
+        // updateUsuario(user.id, { [campo]: novoValor.trim() }); // TODO: Integrar com backend
         span.textContent = novoValor.trim();
-        addNotificacao(user.id, `Seu perfil foi atualizado! +10 pontos`);
-        addPontos(user.id, 10);
+        // addNotificacao(user.id, `Seu perfil foi atualizado! +10 pontos`); // TODO: Integrar com backend
+        // addPontos(user.id, 10); // TODO: Integrar com backend
       }
     });
   });
 }
 
 // 10. Gamificação (O Padrão Strategy que fizemos)
-javascript
 async function setupPsicologoGamificacao() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
@@ -469,7 +467,7 @@ function setupPsicologoNotificacoes() {
   const user = getUsuarioLogado();
   if (!user || user.tipo !== "psicologo") return;
   
-  const notificacoes = getNotificacoesDoUsuario(user.id);
+  const notificacoes = []; // TODO: Integrar fetch de Notificacoes
   const container = document.querySelector(".lista-notificacoes");
   
   if (!container) return;
@@ -516,10 +514,154 @@ function setupBotaoSair() {
 }
 
 // ============================================
+// FUNÇÕES DO PACIENTE
+// ============================================
+
+async function setupPacienteListaPsicologos() {
+  const container = document.querySelector(".list-grid");
+  if (!container) return;
+  try {
+    const res = await fetch("http://localhost:8000/api/psicologos");
+    const psicologos = await res.json();
+    
+    container.innerHTML = "";
+    if(psicologos.length === 0) {
+      container.innerHTML = "<p>Nenhum psicólogo encontrado.</p>";
+      return;
+    }
+    
+    psicologos.forEach(psi => {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <h2 class="card-title">${psi.nome}</h2>
+        <div class="card-tag">${psi.especialidade || "Geral"}</div>
+        <p class="card-meta">CRP: ${psi.crp || "Não informado"}</p>
+        <p class="card-meta">💰 ${psi.valorConsulta || "Consultar valor"}</p>
+        <button class="btn btn-primary btn-ver-detalhes" data-id="${psi.id}">Ver detalhes</button>
+      `;
+      card.querySelector(".btn-ver-detalhes").addEventListener("click", () => {
+        localStorage.setItem("psiagenda-psicologo-selecionado", psi.id);
+        window.location.href = "paciente-detalhe-psicologo.html";
+      });
+      container.appendChild(card);
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function setupPacienteDetalhePsicologo() {
+  const psiId = localStorage.getItem("psiagenda-psicologo-selecionado");
+  if (!psiId) return window.location.href = "paciente-lista-psicologos.html";
+  
+  try {
+    const res = await fetch(`http://localhost:8000/api/psicologos/${psiId}`);
+    const psi = await res.json();
+    
+    document.querySelector(".psi-nome").textContent = psi.nome;
+    document.querySelector(".psi-especialidade").textContent = psi.especialidade || "Clínico Geral";
+    document.querySelector(".psi-telefone").textContent = psi.telefone || "Não informado";
+    document.querySelector(".psi-crp").textContent = psi.crp || "Não informado";
+    document.querySelector(".psi-bio").textContent = psi.bio || "Sem informações adicionais.";
+    document.querySelector(".psi-valor").textContent = psi.valorConsulta || "Não informado";
+    
+    const btnAgendar = document.querySelector(".btn-marcar-consulta");
+    if(btnAgendar) {
+      btnAgendar.addEventListener("click", () => {
+        window.location.href = "paciente-agenda-mes.html";
+      });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function setupPacienteAgendaMes() {
+  const psiId = localStorage.getItem("psiagenda-psicologo-selecionado");
+  if (!psiId) {
+    alert("Por favor, selecione um psicólogo primeiro.");
+    window.location.href = "paciente-lista-psicologos.html";
+    return;
+  }
+  
+  const cells = document.querySelectorAll(".calendar tbody td");
+  cells.forEach(cell => {
+    const dia = parseInt(cell.textContent.trim());
+    if (isNaN(dia)) return;
+    
+    cell.classList.add("calendar-day-consulta"); // Assume todos disponiveis para simplificar o MVP
+    cell.style.cursor = "pointer";
+    cell.addEventListener("click", () => {
+      const dataISO = `2025-01-${String(dia).padStart(2, "0")}`;
+      setDiaSelecionado(dataISO);
+      window.location.href = "paciente-agenda-dia.html";
+    });
+  });
+}
+
+async function setupPacienteAgendaDia() {
+  const user = getUsuarioLogado();
+  const psiId = localStorage.getItem("psiagenda-psicologo-selecionado");
+  if (!user || !psiId) return;
+  
+  const dataISO = getDiaSelecionado();
+  const data = new Date(dataISO);
+  document.querySelector("#titulo-dia").textContent = data.toLocaleDateString("pt-BR", { weekday: "long" });
+  document.querySelector(".day-number").textContent = data.getDate();
+  
+  const container = document.querySelector(".time-slots");
+  if (!container) return;
+  
+  try {
+    const res = await fetch(`http://localhost:8000/api/agenda/disponibilidade?psicologo_id=${psiId}&data=${dataISO}`);
+    const dataRes = await res.json();
+    const horarios = dataRes.horarios || [];
+    
+    container.innerHTML = "";
+    if (horarios.length === 0) {
+      container.innerHTML = '<p class="helper-text">Nenhum horário disponível neste dia.</p>';
+      return;
+    }
+    
+    horarios.forEach(horario => {
+      const slot = document.createElement("div");
+      slot.className = "time-slot";
+      slot.innerHTML = `
+        <div><strong>${horario}</strong></div>
+        <button class="btn btn-sm btn-primary">Agendar</button>
+      `;
+      slot.querySelector("button").addEventListener("click", async () => {
+        if(confirm(`Confirmar agendamento para ${horario}?`)) {
+          const resAgendar = await fetch("http://localhost:8000/api/consultas", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+              paciente_id: user.id,
+              psicologo_id: psiId,
+              data_hora: `${dataISO}-${horario}`
+            })
+          });
+          const result = await resAgendar.json();
+          if(!resAgendar.ok) alert(result.erro);
+          else {
+            alert("Consulta agendada com sucesso!");
+            window.location.href = "paciente-agenda-confirmada.html";
+          }
+        }
+      });
+      container.appendChild(slot);
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// ============================================
 // INICIALIZAÇÃO
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
-  seedDemo();
+  // seedDemo(); // Removido, era ligado ao antigo LocalStorage
   checkPageAccess();
   setupBotaoSair();
   
@@ -536,7 +678,11 @@ document.addEventListener("DOMContentLoaded", () => {
     "psicologo-paciente-detalhe.html": setupPsicologoPacienteDetalhe,
     "psicologo-perfil.html": setupPsicologoPerfil,
     "psicologo-gamificacao.html": setupPsicologoGamificacao,
-    "psicologo-notificacoes.html": setupPsicologoNotificacoes
+    "psicologo-notificacoes.html": setupPsicologoNotificacoes,
+    "paciente-lista-psicologos.html": setupPacienteListaPsicologos,
+    "paciente-detalhe-psicologo.html": setupPacienteDetalhePsicologo,
+    "paciente-agenda-mes.html": setupPacienteAgendaMes,
+    "paciente-agenda-dia.html": setupPacienteAgendaDia
   };
   
   if (setups[pagina]) {
