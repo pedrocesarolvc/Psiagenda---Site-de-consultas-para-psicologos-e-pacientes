@@ -87,7 +87,7 @@ function setupLogin() {
       });
       const dados = await resposta.json();
       if (!resposta.ok) {
-        alert(dados.erro);
+        alert(dados.detail || dados.erro || "Erro ao fazer login.");
         return;
       }
       setUsuarioLogado({ id: dados.usuario_id, tipo: dados.tipo });
@@ -124,7 +124,7 @@ function setupCadastroPsicologo() {
       });
       const dados = await resposta.json();
       if (!resposta.ok) {
-        alert(dados.erro);
+        alert(dados.detail || dados.erro || "Erro ao criar conta.");
         return;
       }
       setUsuarioLogado({ id: dados.id, tipo: "psicologo" });
@@ -158,7 +158,7 @@ function setupCadastroPsicologo() {
       });
       const dados = await resposta.json();
       if (!resposta.ok) {
-        alert(dados.erro);
+        alert(dados.detail || dados.erro || "Erro ao criar conta.");
         return;
       }
       setUsuarioLogado({ id: dados.id, tipo: "paciente" });
